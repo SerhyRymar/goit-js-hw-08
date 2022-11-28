@@ -3,25 +3,14 @@ import throttle from 'lodash.throttle';
 
 const iframe = document.querySelector('iframe');
 const player = new Player(iframe);
-const throttle = require('lodash.throttle');
 
-player.on(
-  'timeupdate',
-  throttle(data => {
-    const time = data.seconds;
-    localStorage.setItem('videoplayer-current-time', time);
-  }, 1000)
-);
-const onTime = localStorage.getItem('videoplayer-current-time');
+player.on('timeupdate', throttle(onTime, 1000));
 
-player
-  .setCurrentTime(onTime)
-  .then(function (seconds) {})
-  .catch(function (error) {
-    switch (error.name) {
-      case 'RangeError':
-        break;
-      default:
-        break;
-    }
-  });
+function onTime(e) {
+  localStorage.setItem('videoplayer-current-time', e.seconds);
+}
+
+const getTime = localStorage.getItem('videoplayer-current-time');
+if (getTime !== null) {
+  player.setCurrentTime(getTime);
+}
